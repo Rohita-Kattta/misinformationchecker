@@ -162,28 +162,32 @@ function App() {
   // Function to analyze URL and generate a score
   const analyzeUrl = (url: string): AnalysisResult => {
     const domain = new URL(url).hostname.toLowerCase();
-    let score = 0; // Base score
+    let score = 0;
     let factors: string[] = [];
     
-    // Check for official domains
+    // Check for official domains (increased base score)
     if (domain.endsWith('.gov') || domain.endsWith('.edu')) {
-      score += 30;
+      score += 40;
       factors.push("Official government or educational domain");
     }
     
-    // Check against tiered news sources
+    // Significantly increased scores for trusted sources
     if (TIER_1_DOMAINS.some(d => domain.includes(d))) {
-      score += 35;
+      score += 85; // Base score for Tier 1
       factors.push("Tier 1 - Highly trusted news organization");
       factors.push("Known for factual reporting and strong editorial standards");
+      factors.push("Extensive fact-checking and verification processes");
+      factors.push("Global reputation for journalistic excellence");
     } else if (TIER_2_DOMAINS.some(d => domain.includes(d))) {
-      score += 25;
+      score += 70; // Base score for Tier 2
       factors.push("Tier 2 - Generally reputable news source");
-      factors.push("Reliable reporting with possible specialty focus");
+      factors.push("Reliable reporting with established editorial standards");
+      factors.push("Regular fact-checking practices");
     } else if (TIER_3_DOMAINS.some(d => domain.includes(d))) {
-      score += 15;
+      score += 60; // Base score for Tier 3
       factors.push("Tier 3 - Specialized or regional news source");
-      factors.push("Credibility may vary by topic or program");
+      factors.push("Credibility varies by topic or program");
+      factors.push("Subject to editorial oversight and fact-checking");
     }
 
     // Check for academic journals
@@ -194,14 +198,14 @@ function App() {
       factors.push("Rigorous scientific review process");
     }
 
-    // Suspicious characteristics
+    // Suspicious characteristics (reduced impact)
     if (domain.includes('blog') || domain.includes('free')) {
-      score += 10;
+      score -= 10;
       factors.push("Informal or user-generated content platform");
     }
 
-    // Add slight randomness to simulate content analysis
-    score += Math.floor(Math.random() * 6);
+    // Small random variation (reduced impact)
+    score += Math.floor(Math.random() * 3);
     
     // Ensure score stays within 0-100
     score = Math.max(0, Math.min(100, score));
@@ -209,9 +213,9 @@ function App() {
     // Generate appropriate summary based on score
     let summary = "";
     if (score >= 80) {
-      summary = "This content comes from a highly trusted source with established credibility and strong editorial standards.";
+      summary = "This content comes from a highly trusted source with established credibility, rigorous fact-checking, and strong editorial standards.";
     } else if (score >= 65) {
-      summary = "This content is from a generally reliable source, though some bias or specialty focus may be present.";
+      summary = "This content is from a generally reliable source with established editorial practices and fact-checking procedures.";
     } else if (score >= 45) {
       summary = "This content shows mixed indicators of reliability. Consider cross-referencing with other sources.";
     } else {
